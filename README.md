@@ -1,0 +1,1 @@
+This is a fork of [quafzi/magento-CustomerGridOrderCount](https://github.com/quafzi/magento-CustomerGridOrderCount) that adds the customer order count to the order grid as well.
