@@ -49,7 +49,7 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
         ), 'customer_since');
     }
 
-    public function beforeCustomerCollectionLoad(Varien_Event_Observer $observer)
+    public function beforeCollectionLoad(Varien_Event_Observer $observer)
     {
         $collection = $observer->getEvent()->getCollection();
         Mage::log(get_class($collection));
