@@ -13,9 +13,23 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
         if ($block instanceof Mage_Adminhtml_Block_Customer_Grid) {
             $this->_modifyCustomerGrid($block);
         }
+
+        if ($block instanceof Mage_Adminhtml_Block_Sales_Order_Grid) {
+            $this->_modifyOrderGrid($block);
+        }
     }
 
     protected function _modifyCustomerGrid(Mage_Adminhtml_Block_Customer_Grid $grid)
+    {
+        $this->_addOrderCountColumn($grid);
+
+        // reinitialisiert die Spaltensortierung
+        $grid->sortColumnsByOrder();
+        // reinitialisiert die Sortierung und Filter der Collection
+        $this->_callProtectedMethod($grid, '_prepareCollection');
+    }
+
+    protected function _modifyOrderGrid(Mage_Adminhtml_Block_Sales_Order_Grid $grid)
     {
         $this->_addOrderCountColumn($grid);
 
@@ -39,6 +53,8 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
 
     protected function _addOrderCountColumn($grid)
     {
+        $columnAfter = ($grid instanceof Mage_Adminhtml_Block_Customer_Grid) ? 'customer_since' : 'shipping_name';
+
         $grid->addColumnAfter('order_count', array(
             'header'    => Mage::helper('customer')->__('Order Count'),
             'align'     => 'center',
@@ -46,13 +62,12 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
             'type'      => 'number',
             'filter'    => false,
             'index'     => 'order_count'
-        ), 'customer_since');
+        ), $columnAfter);
     }
 
     public function beforeCollectionLoad(Varien_Event_Observer $observer)
     {
         $collection = $observer->getEvent()->getCollection();
-        Mage::log(get_class($collection));
         if ($collection instanceof Mage_Customer_Model_Resource_Customer_Collection) {
             $orderTableName = Mage::getSingleton('core/resource')
                 ->getTableName('sales/order');
@@ -65,6 +80,23 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
                     array('order_count' => 'COUNT(customer_id)')
                 );
             $collection->groupByAttribute('entity_id');
+
+            return;
+        }
+
+        $collection = $observer->getOrderGridCollection();
+        if ($collection instanceof Mage_Sales_Model_Resource_Order_Grid_Collection) {
+            $orderTableName = Mage::getSingleton('core/resource')
+                ->getTableName('sales/order');
+
+            $collection
+                ->getSelect()
+                ->joinLeft(
+                    array('orders' => $orderTableName),
+                    'orders.customer_id=`main_table`.customer_id',
+                    array('order_count' => 'COUNT(orders.customer_id)')
+                )
+                ->group('entity_id');
         }
     }
 }
