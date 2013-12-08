@@ -1,3 +1,7 @@
 app/code/community/Quafzi/CustomerGridOrderCount app/code/community/Quafzi/CustomerGridOrderCount
+
+app/code/local/Varien/Data/Collection/Db.php app/code/local/Varien/Data/Collection/Db.php
+
 app/etc/modules/Quafzi_CustomerGridOrderCount.xml app/etc/modules/Quafzi_CustomerGridOrderCount.xml
+
 app/locale/de_DE/Quafzi_CustomerGridOrderCount.csv app/locale/de_DE/Quafzi_CustomerGridOrderCount.csv
