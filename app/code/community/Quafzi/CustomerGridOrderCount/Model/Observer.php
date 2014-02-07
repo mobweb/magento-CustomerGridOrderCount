@@ -79,7 +79,7 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
                     'orders.customer_id=e.entity_id',
                     array('order_count' => 'COUNT(customer_id)')
                 );
-            $collection->groupByAttribute('entity_id');
+            $collection->groupByAttribute('main_table.entity_id');
 
             return;
         }
@@ -96,7 +96,7 @@ class Quafzi_CustomerGridOrderCount_Model_Observer
                     'orders.customer_id=`main_table`.customer_id',
                     array('order_count' => 'COUNT(orders.customer_id)')
                 )
-                ->group('entity_id');
+                ->group('main_table.entity_id');
 
             // Since we are inner joining the "orders" table, we have to
             // specify which table to run the search queries against,
